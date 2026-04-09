@@ -2912,12 +2912,19 @@ async function syncFromSheets() {
       const localMaxTime = localYear.reduce((max, item) => Math.max(max, item.updatedAt || 0), 0);
 
       if (sheetMaxTime > localMaxTime && sheetYear.length > 0) {
-        // Sheets가 더 최신 → Sheets 데이터로 교체
-        allData[yearKey] = sheetYear;
-        merged = true;
-        console.log(`📥 Sheets → 로컬 업데이트: ${yearKey} (Sheets: ${new Date(sheetMaxTime).toLocaleString()})`);
-      } else if (localMaxTime > sheetMaxTime && localYear.length > 0) {
-        // 로컬이 더 최신 → Sheets에 Push (백그라운드)
+        // Sheets가 더 최신이더라도 로컬 데이터가 더 많으면 로컬 우선 보호
+        if (localYear.length > sheetYear.length && localMaxTime === 0) {
+          // 로컬에 updatedAt 없는 신규 데이터가 있는 경우 → 로컬 우선, Sheets에 push
+          console.log(`🛡️ 로컬 데이터 보호 (${yearKey}): 로컬 ${localYear.length}건 > Sheets ${sheetYear.length}건`);
+          syncToSheets(yearKey);
+        } else {
+          // Sheets 데이터로 교체
+          allData[yearKey] = sheetYear;
+          merged = true;
+          console.log(`📥 Sheets → 로컬 업데이트: ${yearKey} (Sheets: ${new Date(sheetMaxTime).toLocaleString()})`);
+        }
+      } else if (localMaxTime >= sheetMaxTime && localYear.length > 0) {
+        // 로컬이 같거나 최신 → Sheets에 Push (백그라운드)
         console.log(`📤 로컬 → Sheets Push 예정: ${yearKey}`);
         syncToSheets(yearKey); // fire-and-forget
       }
@@ -4033,7 +4040,8 @@ function saveData() {
     contract1: buildPayment('Contract1', existingItem?.contract1),
     interim1: buildPayment('Interim1', existingItem?.interim1),
     interim2: buildPayment('Interim2', existingItem?.interim2),
-    balance1: buildPayment('Balance1', existingItem?.balance1)
+    balance1: buildPayment('Balance1', existingItem?.balance1),
+    updatedAt: Date.now()
   };
   if (!allData[currentYear]) allData[currentYear] = [];
   if (idx === '') { allData[currentYear].push(item); showToast('새 공사가 추가되었습니다.', 'success'); }
