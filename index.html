@@ -333,11 +333,8 @@ tr.selected { background: var(--primary-light); }
     <button type="button" class="main-list-tab active" onclick="switchMainListTab('construction')" id="mainTabConstruction" style="padding:0.75rem 2rem;border:none;background:#1976d2;color:white;font-weight:600;font-size:1rem;cursor:pointer;border-radius:8px 8px 0 0;margin-right:4px;">
       🏗️ 공사현황
     </button>
-    <button type="button" class="main-list-tab" onclick="switchMainListTab('consulting')" id="mainTabConsulting" style="padding:0.75rem 2rem;border:none;background:#e0e0e0;color:#666;font-weight:600;font-size:1rem;cursor:pointer;border-radius:8px 8px 0 0;margin-left:4px;">
+    <button type="button" class="main-list-tab" onclick="switchMainListTab('consulting')" id="mainTabConsulting" style="padding:0.75rem 2rem;border:none;background:#e0e0e0;color:#666;font-weight:600;font-size:1rem;cursor:pointer;border-radius:8px 8px 0 0;">
       📋 기술컨설팅
-    </button>
-    <button type="button" class="main-list-tab" onclick="switchMainListTab('manager')" id="mainTabManager" style="padding:0.75rem 2rem;border:none;background:#e0e0e0;color:#666;font-weight:600;font-size:1rem;cursor:pointer;border-radius:8px 8px 0 0;margin-left:4px;">
-      👥 담당자별 실적
     </button>
   </div>
   
@@ -832,104 +829,6 @@ tr.selected { background: var(--primary-light); }
       </table>
     </div>
   </div><!-- mainConsultingSection 끝 -->
-
-  <!-- 담당자별 실적 섹션 -->
-  <div id="mainManagerSection" style="display:none;">
-    <div class="card" style="border-radius:12px;overflow:hidden;margin-bottom:1rem;">
-      <div style="padding:1rem 1.25rem;background:#f8f9fa;border-bottom:1px solid #e0e0e0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-        <div style="font-size:1.1rem;font-weight:700;color:#333;">👥 담당자별 실적 현황</div>
-        <button onclick="printNewManagerStats()" style="padding:0.3rem 0.8rem;border:1px solid #999;background:#fff;color:#555;border-radius:6px;cursor:pointer;font-size:0.8rem;">🖨️ 인쇄</button>
-      </div>
-      <div style="padding:1rem 1.25rem;">
-
-        <!-- 공사현황 / 기술컨설팅 서브탭 -->
-        <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
-          <button onclick="switchManagerSubTab('construction')" id="mgrSubTabConstruction" style="padding:0.5rem 1.25rem;border:none;background:#1976d2;color:white;font-weight:600;font-size:0.9rem;cursor:pointer;border-radius:8px;">🏗️ 공사현황</button>
-          <button onclick="switchManagerSubTab('consulting')" id="mgrSubTabConsulting" style="padding:0.5rem 1.25rem;border:none;background:#e0e0e0;color:#666;font-weight:600;font-size:0.9rem;cursor:pointer;border-radius:8px;">📋 기술컨설팅</button>
-        </div>
-
-        <!-- 분기/반기 필터 탭 -->
-        <div style="display:flex;gap:0.4rem;margin-bottom:1.25rem;flex-wrap:wrap;">
-          <button onclick="switchManagerPeriod('all')"  id="mgrPeriodAll" style="padding:0.35rem 0.9rem;border:none;background:#1976d2;color:white;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">전체</button>
-          <button onclick="switchManagerPeriod('q1')"   id="mgrPeriodQ1"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">1분기 (1~3월)</button>
-          <button onclick="switchManagerPeriod('q2')"   id="mgrPeriodQ2"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">2분기 (4~6월)</button>
-          <button onclick="switchManagerPeriod('q3')"   id="mgrPeriodQ3"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">3분기 (7~9월)</button>
-          <button onclick="switchManagerPeriod('q4')"   id="mgrPeriodQ4"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">4분기 (10~12월)</button>
-          <button onclick="switchManagerPeriod('h1')"   id="mgrPeriodH1"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">상반기 (1~6월)</button>
-          <button onclick="switchManagerPeriod('h2')"   id="mgrPeriodH2"  style="padding:0.35rem 0.9rem;border:none;background:#e0e0e0;color:#555;font-size:0.82rem;font-weight:600;cursor:pointer;border-radius:20px;">하반기 (7~12월)</button>
-        </div>
-
-        <!-- 공사현황 실적 테이블 -->
-        <div id="mgrConstructionStats">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-            <div class="manager-category">
-              <div class="category-title">〈 본 사 〉</div>
-              <table class="manager-table">
-                <thead><tr><th>담당자</th><th>건수</th><th>공사금액(VAT별도)</th><th>공사금액(VAT포함)</th></tr></thead>
-                <tbody id="newHqManagerTableBody"></tbody>
-                <tfoot>
-                  <tr class="subtotal-row"><td><strong>본사 합계</strong></td><td id="newHqTotalCount"><strong>0</strong></td><td id="newHqTotalAmount"><strong>0</strong></td><td id="newHqTotalAmountTax"><strong>0</strong></td></tr>
-                  <tr class="type-row"><td>[ POUR 컨설팅 ]</td><td id="newHqConsultingCount">0</td><td id="newHqConsultingAmount">0</td><td id="newHqConsultingAmountTax">0</td></tr>
-                  <tr class="type-row"><td>[ 직 영 ]</td><td id="newHqDirectCount">0</td><td id="newHqDirectAmount">0</td><td id="newHqDirectAmountTax">0</td></tr>
-                </tfoot>
-              </table>
-            </div>
-            <div class="manager-category">
-              <div class="category-title">〈 외 주 〉</div>
-              <table class="manager-table">
-                <thead><tr><th>담당자</th><th>건수</th><th>공사금액(VAT별도)</th><th>공사금액(VAT포함)</th></tr></thead>
-                <tbody id="newExtManagerTableBody"></tbody>
-                <tfoot>
-                  <tr class="subtotal-row"><td><strong>외주 합계</strong></td><td id="newExtTotalCount"><strong>0</strong></td><td id="newExtTotalAmount"><strong>0</strong></td><td id="newExtTotalAmountTax"><strong>0</strong></td></tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-          <div class="grand-total-section">
-            <table class="manager-table grand-total-table">
-              <tr><td><strong>전체 합계</strong></td><td id="newGrandTotalCount"><strong>0건</strong></td><td id="newGrandTotalAmount"><strong>0</strong></td><td id="newGrandTotalAmountTax"><strong>0</strong></td></tr>
-            </table>
-          </div>
-        </div>
-
-        <!-- 기술컨설팅 실적 테이블 -->
-        <div id="mgrConsultingStats" style="display:none;">
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
-            <div class="manager-category">
-              <div class="category-title" style="background:#e8f5e9;color:#2e7d32;">〈 일 반 〉</div>
-              <table class="manager-table">
-                <thead><tr><th>담당자</th><th>건수</th><th>낙찰금액</th><th>실행금액</th></tr></thead>
-                <tbody id="newConsultingNormalBody"></tbody>
-                <tfoot><tr class="subtotal-row"><td><strong>일반 합계</strong></td><td id="newConsultingNormalCount">0</td><td id="newConsultingNormalBid">-</td><td id="newConsultingNormalExec">-</td></tr></tfoot>
-              </table>
-            </div>
-            <div class="manager-category">
-              <div class="category-title" style="background:#e3f2fd;color:#1565c0;">〈 시 지 원 〉</div>
-              <table class="manager-table">
-                <thead><tr><th>담당자</th><th>건수</th><th>낙찰금액</th><th>실행금액</th></tr></thead>
-                <tbody id="newConsultingCityBody"></tbody>
-                <tfoot><tr class="subtotal-row"><td><strong>시지원 합계</strong></td><td id="newConsultingCityCount">0</td><td id="newConsultingCityBid">-</td><td id="newConsultingCityExec">-</td></tr></tfoot>
-              </table>
-            </div>
-            <div class="manager-category">
-              <div class="category-title" style="background:#f3e5f5;color:#7b1fa2;">〈 사 후 정 산 〉</div>
-              <table class="manager-table">
-                <thead><tr><th>담당자</th><th>건수</th><th>낙찰금액</th><th>실행금액</th></tr></thead>
-                <tbody id="newConsultingPostBody"></tbody>
-                <tfoot><tr class="subtotal-row"><td><strong>사후정산 합계</strong></td><td id="newConsultingPostCount">0</td><td id="newConsultingPostBid">-</td><td id="newConsultingPostExec">-</td></tr></tfoot>
-              </table>
-            </div>
-          </div>
-          <div class="grand-total-section">
-            <table class="manager-table grand-total-table">
-              <tr><td><strong>기술컨설팅 전체 합계</strong></td><td id="newConsultingGrandCount"><strong>0건</strong></td><td id="newConsultingGrandBid"><strong>0</strong></td><td id="newConsultingGrandExec"><strong>0</strong></td></tr>
-            </table>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div><!-- mainManagerSection 끝 -->
 </main>
 
 <div class="modal" id="editModal">
@@ -16338,199 +16237,44 @@ let consultingListData = [];
 // 메인 리스트 탭 전환
 function switchMainListTab(tab) {
   console.log('탭 전환:', tab);
-
+  
   const tabConstruction = document.getElementById('mainTabConstruction');
-  const tabConsulting   = document.getElementById('mainTabConsulting');
-  const tabManager      = document.getElementById('mainTabManager');
+  const tabConsulting = document.getElementById('mainTabConsulting');
   const sectionConstruction = document.getElementById('mainConstructionSection');
-  const sectionConsulting   = document.getElementById('mainConsultingSection');
-  const sectionManager      = document.getElementById('mainManagerSection');
-
-  // 모든 탭/섹션 초기화
-  [tabConstruction, tabConsulting, tabManager].forEach(t => {
-    if (t) { t.style.background = '#e0e0e0'; t.style.color = '#666'; }
-  });
-  [sectionConstruction, sectionConsulting, sectionManager].forEach(s => {
-    if (s) s.style.display = 'none';
-  });
-
+  const sectionConsulting = document.getElementById('mainConsultingSection');
+  
+  if (!tabConstruction || !tabConsulting || !sectionConstruction || !sectionConsulting) {
+    console.error('탭 요소를 찾을 수 없음');
+    return;
+  }
+  
   if (tab === 'construction') {
     tabConstruction.style.background = '#1976d2';
     tabConstruction.style.color = 'white';
+    tabConsulting.style.background = '#e0e0e0';
+    tabConsulting.style.color = '#666';
     sectionConstruction.style.display = 'block';
-
-  } else if (tab === 'consulting') {
+    sectionConsulting.style.display = 'none';
+  } else {
+    tabConstruction.style.background = '#e0e0e0';
+    tabConstruction.style.color = '#666';
     tabConsulting.style.background = '#00897b';
     tabConsulting.style.color = 'white';
+    sectionConstruction.style.display = 'none';
     sectionConsulting.style.display = 'block';
+    
+    // 년도 필터 동기화
     const yearFilter = document.getElementById('consultingMainYearFilter');
-    if (yearFilter && currentYear && !currentYear.includes('-')) yearFilter.value = currentYear;
-    setTimeout(() => { populateConsultingMainManagerFilter(); renderConsultingMain(); }, 10);
-
-  } else if (tab === 'manager') {
-    tabManager.style.background = '#6b4c9a';
-    tabManager.style.color = 'white';
-    sectionManager.style.display = 'block';
-    renderNewManagerStats();
-  }
-}
-
-/* ===== 담당자별 실적 탭 전용 함수 ===== */
-let currentManagerSubTab = 'construction';
-let currentManagerPeriod = 'all';
-
-function getManagerPeriodMonths(period) {
-  const map = { q1:[1,2,3], q2:[4,5,6], q3:[7,8,9], q4:[10,11,12], h1:[1,2,3,4,5,6], h2:[7,8,9,10,11,12] };
-  return map[period] || null; // null = 전체
-}
-
-function switchManagerSubTab(sub) {
-  currentManagerSubTab = sub;
-  const isConst = sub === 'construction';
-  document.getElementById('mgrSubTabConstruction').style.background = isConst ? '#1976d2' : '#e0e0e0';
-  document.getElementById('mgrSubTabConstruction').style.color     = isConst ? 'white'   : '#666';
-  document.getElementById('mgrSubTabConsulting').style.background  = isConst ? '#e0e0e0' : '#00897b';
-  document.getElementById('mgrSubTabConsulting').style.color       = isConst ? '#666'    : 'white';
-  document.getElementById('mgrConstructionStats').style.display = isConst ? 'block' : 'none';
-  document.getElementById('mgrConsultingStats').style.display   = isConst ? 'none'  : 'block';
-  renderNewManagerStats();
-}
-
-function switchManagerPeriod(period) {
-  currentManagerPeriod = period;
-  ['all','q1','q2','q3','q4','h1','h2'].forEach(p => {
-    const btn = document.getElementById('mgrPeriod' + p.charAt(0).toUpperCase() + p.slice(1));
-    if (!btn) return;
-    btn.style.background = p === period ? '#1976d2' : '#e0e0e0';
-    btn.style.color      = p === period ? 'white'   : '#555';
-  });
-  renderNewManagerStats();
-}
-
-function renderNewManagerStats() {
-  if (currentManagerSubTab === 'construction') {
-    renderNewConstructionStats(currentManagerPeriod);
-  } else {
-    renderNewConsultingStats(currentManagerPeriod);
-  }
-}
-
-function renderNewConstructionStats(period) {
-  const months = getManagerPeriodMonths(period);
-  const data = allData[currentYear] || [];
-  const cancelledList = CANCELLED_INFO[currentYear] || [];
-  const hqManagers = {}, extManagers = {};
-
-  data.forEach(item => {
-    const noKey = String(Math.floor(Number(item.no)));
-    if (item.cancelled || cancelledList.includes(noKey) || (item.site && item.site.includes('해지'))) return;
-
-    // 기간 필터 (계약일 기준)
-    if (months && item.contractDate) {
-      const m = parseInt((item.contractDate || '').split('-')[1]);
-      if (!months.includes(m)) return;
-    } else if (months && !item.contractDate) return;
-
-    const manager = item.manager || '기타';
-    const type    = item.type || '';
-    const amount    = parseNum(item.amount);
-    const amountTax = parseNum(item.amountTax) || Math.round(amount * 1.1);
-    const isExt  = type.includes('(외)') || type.includes('외)');
-    const isConsulting = type.includes('컨설팅');
-    const isDirect     = type.includes('직영');
-
-    if (isExt) {
-      if (!extManagers[manager]) extManagers[manager] = { count:0, amount:0, amountTax:0 };
-      extManagers[manager].count++; extManagers[manager].amount += amount; extManagers[manager].amountTax += amountTax;
-    } else {
-      if (!hqManagers[manager]) hqManagers[manager] = { count:0, amount:0, amountTax:0, consulting:{count:0,amount:0,amountTax:0}, direct:{count:0,amount:0,amountTax:0} };
-      hqManagers[manager].count++; hqManagers[manager].amount += amount; hqManagers[manager].amountTax += amountTax;
-      if (isConsulting) { hqManagers[manager].consulting.count++; hqManagers[manager].consulting.amount += amount; hqManagers[manager].consulting.amountTax += amountTax; }
-      else if (isDirect) { hqManagers[manager].direct.count++; hqManagers[manager].direct.amount += amount; hqManagers[manager].direct.amountTax += amountTax; }
+    if (yearFilter && currentYear && !currentYear.includes('-')) {
+      yearFilter.value = currentYear;
     }
-  });
-
-  // 본사 테이블
-  let hqHtml='', hqC=0, hqA=0, hqAT=0, hqCC=0, hqCA=0, hqCAT=0, hqDC=0, hqDA=0, hqDAT=0;
-  Object.entries(hqManagers).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    hqHtml+=`<tr><td>공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${fmt(s.amount)}</td><td>${fmt(s.amountTax)}</td></tr>`;
-    hqC+=s.count; hqA+=s.amount; hqAT+=s.amountTax;
-    hqCC+=s.consulting.count; hqCA+=s.consulting.amount; hqCAT+=s.consulting.amountTax;
-    hqDC+=s.direct.count; hqDA+=s.direct.amount; hqDAT+=s.direct.amountTax;
-  });
-  document.getElementById('newHqManagerTableBody').innerHTML = hqHtml;
-  document.getElementById('newHqTotalCount').innerHTML=`<strong>${hqC}</strong>`;
-  document.getElementById('newHqTotalAmount').innerHTML=`<strong>${fmt(hqA)}</strong>`;
-  document.getElementById('newHqTotalAmountTax').innerHTML=`<strong>${fmt(hqAT)}</strong>`;
-  document.getElementById('newHqConsultingCount').textContent=hqCC;
-  document.getElementById('newHqConsultingAmount').textContent=fmt(hqCA);
-  document.getElementById('newHqConsultingAmountTax').textContent=fmt(hqCAT);
-  document.getElementById('newHqDirectCount').textContent=hqDC;
-  document.getElementById('newHqDirectAmount').textContent=fmt(hqDA);
-  document.getElementById('newHqDirectAmountTax').textContent=fmt(hqDAT);
-
-  // 외주 테이블
-  let extHtml='', extC=0, extA=0, extAT=0;
-  Object.entries(extManagers).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    extHtml+=`<tr><td>공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${fmt(s.amount)}</td><td>${fmt(s.amountTax)}</td></tr>`;
-    extC+=s.count; extA+=s.amount; extAT+=s.amountTax;
-  });
-  document.getElementById('newExtManagerTableBody').innerHTML = extHtml;
-  document.getElementById('newExtTotalCount').innerHTML=`<strong>${extC}</strong>`;
-  document.getElementById('newExtTotalAmount').innerHTML=`<strong>${fmt(extA)}</strong>`;
-  document.getElementById('newExtTotalAmountTax').innerHTML=`<strong>${fmt(extAT)}</strong>`;
-
-  // 전체 합계
-  document.getElementById('newGrandTotalCount').innerHTML=`<strong>${hqC+extC}건</strong>`;
-  document.getElementById('newGrandTotalAmount').innerHTML=`<strong>${fmt(hqA+extA)}</strong>`;
-  document.getElementById('newGrandTotalAmountTax').innerHTML=`<strong>${fmt(hqAT+extAT)}</strong>`;
-}
-
-function renderNewConsultingStats(period) {
-  const months = getManagerPeriodMonths(period);
-  const normalManagers={}, cityManagers={}, postManagers={};
-
-  (consultingListData || []).forEach(item => {
-    // 기간 필터 (계약일 기준)
-    if (months) {
-      const dateStr = item.contractDate || item.date || '';
-      if (!dateStr) return;
-      const m = parseInt(dateStr.split('-')[1]);
-      if (!months.includes(m)) return;
-    }
-    const manager = item.manager || '기타';
-    const bidAmt  = item.bidAmount  || 0;
-    const execAmt = item.execAmount || 0;
-    const type    = item.type || '일반';
-    const target  = type === '시지원' ? cityManagers : type === '사후정산' ? postManagers : normalManagers;
-    if (!target[manager]) target[manager] = { count:0, bidAmount:0, execAmount:0 };
-    target[manager].count++; target[manager].bidAmount += bidAmt; target[manager].execAmount += execAmt;
-  });
-
-  function renderCTable(managers, bodyId, countId, bidId, execId) {
-    let html='', totalC=0, totalB=0, totalE=0;
-    Object.entries(managers).sort((a,b)=>b[1].bidAmount-a[1].bidAmount).forEach(([name,s])=>{
-      html+=`<tr><td>실적 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${fmt(s.bidAmount)}</td><td>${fmt(s.execAmount)}</td></tr>`;
-      totalC+=s.count; totalB+=s.bidAmount; totalE+=s.execAmount;
-    });
-    document.getElementById(bodyId).innerHTML = html;
-    document.getElementById(countId).innerHTML=`<strong>${totalC}</strong>`;
-    document.getElementById(bidId).innerHTML=`<strong>${fmt(totalB)}</strong>`;
-    document.getElementById(execId).innerHTML=`<strong>${fmt(totalE)}</strong>`;
-    return { count:totalC, bid:totalB, exec:totalE };
+    
+    // 약간의 지연 후 렌더링 (display 변경 후)
+    setTimeout(() => {
+      populateConsultingMainManagerFilter();
+      renderConsultingMain();
+    }, 10);
   }
-
-  const n = renderCTable(normalManagers, 'newConsultingNormalBody', 'newConsultingNormalCount', 'newConsultingNormalBid', 'newConsultingNormalExec');
-  const c = renderCTable(cityManagers,   'newConsultingCityBody',   'newConsultingCityCount',   'newConsultingCityBid',   'newConsultingCityExec');
-  const p = renderCTable(postManagers,   'newConsultingPostBody',   'newConsultingPostCount',   'newConsultingPostBid',   'newConsultingPostExec');
-
-  document.getElementById('newConsultingGrandCount').innerHTML=`<strong>${n.count+c.count+p.count}건</strong>`;
-  document.getElementById('newConsultingGrandBid').innerHTML=`<strong>${fmt(n.bid+c.bid+p.bid)}</strong>`;
-  document.getElementById('newConsultingGrandExec').innerHTML=`<strong>${fmt(n.exec+c.exec+p.exec)}</strong>`;
-}
-
-function printNewManagerStats() {
-  window.print();
 }
 
 // 담당자 필터 채우기 (메인 화면)
