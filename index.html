@@ -768,6 +768,20 @@ tr.selected { background: var(--primary-light); }
 
     </div>
   </div><!-- mainManagerSection 끝 -->
+
+  <!-- 담당자 상세 리스트 모달 -->
+  <div id="mgrDetailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;overflow-y:auto;padding:24px;" onclick="if(event.target===this)closeMgrDetail()">
+    <div style="max-width:860px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+      <div style="background:linear-gradient(135deg,#3949ab,#5c6bc0);color:white;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
+        <span id="mgrDetailTitle" style="font-size:1.05rem;font-weight:700;"></span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button onclick="printManagerDetail()" style="padding:0.3rem 0.9rem;border:1px solid rgba(255,255,255,0.6);background:rgba(255,255,255,0.2);color:white;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;">🖨️ 인쇄</button>
+          <button onclick="closeMgrDetail()" style="padding:0.3rem 0.75rem;border:1px solid rgba(255,255,255,0.6);background:rgba(255,255,255,0.2);color:white;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;">✕</button>
+        </div>
+      </div>
+      <div id="mgrDetailBody" style="padding:1.25rem;"></div>
+    </div>
+  </div>
 </main>
 
 <div class="modal" id="editModal">
@@ -15014,7 +15028,7 @@ function renderNewConstructionStats(period) {
   // 본사 렌더링
   let hqHtml='', hqCnt=0, hqAmt=0, hqAmtTax=0, hqCsCnt=0, hqCsAmt=0, hqCsAmtTax=0, hqDirCnt=0, hqDirAmt=0, hqDirAmtTax=0;
   Object.entries(hqMgrs).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    hqHtml += `<tr><td>공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
+    hqHtml += `<tr onclick="openManagerDetail('${name}')" style="cursor:pointer;" title="${name} 상세 보기"><td style="color:#1565c0;text-decoration:underline;">공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
     hqCnt+=s.count; hqAmt+=s.amount; hqAmtTax+=s.amountTax;
     hqCsCnt+=s.consulting.count; hqCsAmt+=s.consulting.amount; hqCsAmtTax+=s.consulting.amountTax;
     hqDirCnt+=s.direct.count; hqDirAmt+=s.direct.amount; hqDirAmtTax+=s.direct.amountTax;
@@ -15025,7 +15039,7 @@ function renderNewConstructionStats(period) {
   // 외주 렌더링
   let extHtml='', extCnt=0, extAmt=0, extAmtTax=0;
   Object.entries(extMgrs).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    extHtml += `<tr><td>공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
+    extHtml += `<tr onclick="openManagerDetail('${name}')" style="cursor:pointer;" title="${name} 상세 보기"><td style="color:#1565c0;text-decoration:underline;">공사금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
     extCnt+=s.count; extAmt+=s.amount; extAmtTax+=s.amountTax;
   });
   const extBody = document.getElementById('mgrConExtBody');
@@ -15062,7 +15076,7 @@ function renderNewConsultingStats(period) {
 
   let html='', totCnt=0, totAmt=0, totAmtTax=0;
   Object.entries(stats).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    html += `<tr><td>낙찰금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
+    html += `<tr onclick="openManagerDetail('${name}')" style="cursor:pointer;" title="${name} 상세 보기"><td style="color:#00695c;text-decoration:underline;">낙찰금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
     totCnt+=s.count; totAmt+=s.amount; totAmtTax+=s.amountTax;
   });
   const tbody = document.getElementById('mgrConsBody');
@@ -15105,7 +15119,7 @@ function renderNewCombinedStats(period) {
 
   let html='', totCnt=0, totAmt=0, totAmtTax=0;
   Object.entries(combined).sort((a,b)=>b[1].amountTax-a[1].amountTax).forEach(([name,s])=>{
-    html += `<tr><td>금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
+    html += `<tr onclick="openManagerDetail('${name}')" style="cursor:pointer;" title="${name} 상세 보기"><td style="color:#3949ab;text-decoration:underline;">금액 합계 [ ${name} ]</td><td style="text-align:center;">${s.count}</td><td>${f(s.amount)}</td><td>${f(s.amountTax)}</td></tr>`;
     totCnt+=s.count; totAmt+=s.amount; totAmtTax+=s.amountTax;
   });
   const tbody = document.getElementById('mgrCombBody');
@@ -15120,46 +15134,165 @@ function renderNewCombinedStats(period) {
   sc('mgrCombGrandAmtTax', `<strong>${f(totAmtTax)}</strong>`);
 }
 
+// ── 담당자 상세 모달 ──
+let _mgrDetailCurrentName = '';
+
+function openManagerDetail(name) {
+  _mgrDetailCurrentName = name;
+  const months = getManagerPeriodMonths(currentManagerPeriod);
+  const periodLabels = { all:'전체', q1:'1분기', q2:'2분기', q3:'3분기', q4:'4분기', h1:'상반기', h2:'하반기' };
+  const periodLabel = periodLabels[currentManagerPeriod] || '전체';
+  const f = v => Math.round(v).toLocaleString('ko-KR');
+
+  // 공사현황 데이터 필터
+  const data = allData[currentYear] || [];
+  const cancelledList = CANCELLED_INFO[currentYear] || [];
+  const hqItems = [], extItems = [];
+  data.forEach(item => {
+    if (item.manager !== name) return;
+    const noKey = String(Math.floor(Number(item.no)));
+    if (cancelledList.includes(noKey) || (item.site && item.site.includes('해지'))) return;
+    if (!_mgrFilterByPeriod(item.contractDate || '', months)) return;
+    const type = item.type || '';
+    const isExt = type.includes('(외)') || type.includes('외)');
+    const amt = parseNum(item.amount);
+    const amtTax = parseNum(item.amountTax) || Math.round(amt * 1.1);
+    const entry = { no: item.no, site: item.site || '-', contractDate: item.contractDate || '-', amount: amt, amountTax: amtTax, type };
+    if (isExt) extItems.push(entry); else hqItems.push(entry);
+  });
+
+  // 기술컨설팅 데이터 필터
+  const consItems = (consultingListData || []).filter(item => {
+    if (item.manager !== name) return false;
+    return _mgrFilterByPeriod(item.contractDate || item.date || '', months);
+  }).map(item => {
+    const amt = parseNumber(item.bidAmount || item.contractAmount || 0);
+    return { site: item.site || item.project || '-', contractDate: item.contractDate || item.date || '-', amount: amt, amountTax: Math.round(amt * 1.1) };
+  });
+
+  // 테이블 빌더
+  const buildTable = (items, isConsulting) => {
+    if (!items.length) return '<p style="color:#999;font-size:0.83rem;padding:6px 0;">데이터 없음</p>';
+    let tot = 0, totTax = 0;
+    const rows = items.map((it, i) => {
+      tot += it.amount; totTax += it.amountTax;
+      return `<tr>
+        <td style="text-align:center;width:36px;">${i + 1}</td>
+        <td style="text-align:left;">${it.site}</td>
+        <td style="text-align:center;">${it.contractDate}</td>
+        <td style="text-align:right;">${f(it.amount)}</td>
+        <td style="text-align:right;">${f(it.amountTax)}</td>
+      </tr>`;
+    }).join('');
+    const h1 = isConsulting ? '낙찰금액(VAT별도)' : '금액(VAT별도)';
+    const h2 = isConsulting ? '낙찰금액(VAT포함)' : '금액(VAT포함)';
+    return `<table style="width:100%;border-collapse:collapse;font-size:0.84rem;margin-bottom:4px;">
+      <thead><tr style="background:#546e7a;color:white;">
+        <th style="padding:5px 7px;">No</th>
+        <th style="padding:5px 7px;text-align:left;">현장명</th>
+        <th style="padding:5px 7px;">계약일</th>
+        <th style="padding:5px 7px;">${h1}</th>
+        <th style="padding:5px 7px;">${h2}</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr style="background:#eceff1;font-weight:700;">
+        <td colspan="3" style="padding:5px 7px;text-align:center;border:1px solid #ccc;">합계 (${items.length}건)</td>
+        <td style="padding:5px 7px;text-align:right;border:1px solid #ccc;">${f(tot)}</td>
+        <td style="padding:5px 7px;text-align:right;border:1px solid #ccc;">${f(totTax)}</td>
+      </tr></tfoot>
+    </table>`;
+  };
+
+  const section = (label, color, content) => `
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-size:0.9rem;font-weight:700;color:${color};padding:5px 10px;background:${color}18;border-left:3px solid ${color};border-radius:0 6px 6px 0;margin-bottom:7px;">${label}</div>
+      ${content}
+    </div>`;
+
+  let html = '';
+  if (hqItems.length) html += section('[ 본사 ] 공사현황', '#1565c0', buildTable(hqItems, false));
+  if (extItems.length) html += section('[ 외주 ] 공사현황', '#e65100', buildTable(extItems, false));
+  if (consItems.length) html += section('[ 기술컨설팅 ]', '#00695c', buildTable(consItems, true));
+  if (!html) html = '<p style="text-align:center;color:#999;padding:2rem;">해당 기간 데이터가 없습니다.</p>';
+
+  document.getElementById('mgrDetailTitle').textContent = `${name}  ·  ${currentYear}년 ${periodLabel} 실적 상세`;
+  document.getElementById('mgrDetailBody').innerHTML = html;
+  document.getElementById('mgrDetailModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMgrDetail() {
+  document.getElementById('mgrDetailModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function printManagerDetail() {
+  const body = document.getElementById('mgrDetailBody');
+  const title = document.getElementById('mgrDetailTitle').textContent;
+  if (!body) return;
+  const pw = window.open('', '_blank');
+  pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+    <style>
+      @page { size: A4; margin: 15mm 18mm; }
+      * { margin:0; padding:0; box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      body { font-family:'Malgun Gothic',sans-serif; font-size:12px; padding:10px; }
+      .pt { text-align:center; font-size:18px; font-weight:700; padding-bottom:8px; border-bottom:2px solid #333; margin-bottom:4px; }
+      .ps { text-align:right; font-size:11px; color:#666; margin-bottom:16px; }
+      .sec { margin-bottom:16px; }
+      .sec-label { font-size:13px; font-weight:700; padding:5px 10px; margin-bottom:6px; border-left:3px solid #546e7a; background:#f5f5f5; }
+      table { width:100%; border-collapse:collapse; margin-bottom:4px; }
+      th { background:#546e7a !important; color:white !important; padding:5px 7px; font-size:11px; text-align:center; border:1px solid #546e7a; }
+      td { border:1px solid #bbb; padding:5px 7px; font-size:11px; }
+      td:first-child { text-align:center; }
+      td:nth-child(4), td:nth-child(5) { text-align:right; }
+      tfoot tr { background:#eceff1 !important; font-weight:700; }
+    </style>
+  </head><body>
+    <div class="pt">${title}</div>
+    <div class="ps">인쇄일: ${new Date().toLocaleDateString('ko-KR')}</div>
+    ${body.innerHTML}
+  </body></html>`);
+  pw.document.close();
+  setTimeout(() => pw.print(), 400);
+}
+
 function printNewManagerStats() {
-  const content = document.getElementById('mainManagerSection');
-  if (!content) return;
+  const section = document.getElementById('mainManagerSection');
+  if (!section) return;
+  const gridEl = section.querySelector('div[style*="grid-template-columns"]');
+  if (!gridEl) { window.print(); return; }
   const periodLabels = { all:'전체', q1:'1분기', q2:'2분기', q3:'3분기', q4:'4분기', h1:'상반기', h2:'하반기' };
   const periodLabel = periodLabels[currentManagerPeriod] || '전체';
   const title = `${currentYear}년 ${periodLabel} 실적현황`;
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>${title}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  const pw = window.open('', '_blank');
+  pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
     <style>
       @page { size: A4 landscape; margin: 10mm 12mm; }
-      * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; font-size: 11px; padding: 10px; }
-      .print-title { text-align: center; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-      .print-subtitle { text-align: center; font-size: 11px; color: #666; margin-bottom: 14px; }
-      .manager-stats-header { display: none; }
-      > div > div[style*="grid-template-columns:1fr 1fr 1fr"] { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-      [style*="grid-template-columns:1fr 1fr 1fr"] { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-      .manager-category { margin-bottom: 8px; }
-      .category-title { font-size: 12px; font-weight: 700; margin-bottom: 5px; padding: 4px 8px; background: #f0f0f0; border-radius: 4px; text-align: center; }
-      table { width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 10px; }
-      th, td { border: 1px solid #999; padding: 4px 6px; }
-      th { background: #e8e8e8 !important; font-weight: 700; text-align: center; }
-      td { text-align: right; font-family: 'Courier New', monospace; }
-      td:first-child { text-align: left; font-family: inherit; }
-      td:nth-child(2) { text-align: center; }
-      .subtotal-row { background: #e3f2fd !important; }
-      .subtotal-row td { font-weight: 600; }
-      .type-row { background: #fafafa !important; }
-      .type-row td { font-size: 9.5px; color: #555; }
-      .grand-total-table td { background: #546e7a !important; color: white !important; font-weight: 700; font-size: 11px; padding: 6px; }
+      * { margin:0; padding:0; box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      body { font-family:'Malgun Gothic',sans-serif; font-size:11px; padding:10px; }
+      .pt { text-align:center; font-size:17px; font-weight:700; margin-bottom:4px; }
+      .ps { text-align:center; font-size:11px; color:#666; margin-bottom:14px; }
+      .three-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+      .manager-category { margin-bottom:8px; }
+      .category-title { font-size:12px; font-weight:700; margin-bottom:5px; padding:4px 8px; background:#f0f0f0; border-radius:4px; text-align:center; }
+      table { width:100%; border-collapse:collapse; margin-bottom:6px; font-size:10px; }
+      th, td { border:1px solid #999; padding:4px 6px; }
+      th { background:#e8e8e8 !important; font-weight:700; text-align:center; }
+      td { text-align:right; }
+      td:first-child { text-align:left; color:inherit !important; text-decoration:none !important; cursor:default !important; }
+      td:nth-child(2) { text-align:center; }
+      .subtotal-row { background:#e3f2fd !important; }
+      .subtotal-row td { font-weight:600; }
+      .type-row td { font-size:9.5px; color:#555; }
+      .grand-total-table td { background:#546e7a !important; color:white !important; font-weight:700; font-size:11px; padding:6px; }
     </style>
   </head><body>
-    <div class="print-title">${title}</div>
-    <div class="print-subtitle">인쇄일: ${new Date().toLocaleDateString('ko-KR')}</div>
-    ${content.innerHTML}
+    <div class="pt">${title}</div>
+    <div class="ps">인쇄일: ${new Date().toLocaleDateString('ko-KR')}</div>
+    <div class="three-grid">${gridEl.innerHTML}</div>
   </body></html>`);
-  printWindow.document.close();
-  setTimeout(() => printWindow.print(), 400);
+  pw.document.close();
+  setTimeout(() => pw.print(), 400);
 }
 
 // 담당자 필터 채우기 (메인 화면)
