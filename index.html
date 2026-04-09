@@ -617,7 +617,7 @@ tr.selected { background: var(--primary-light); }
   <!-- 합산 섹션 -->
   <div id="mainManagerSection" style="display:none;">
     <!-- 헤더 + 기간 드롭다운 -->
-    <div class="manager-stats-header" style="background:linear-gradient(135deg,#4a148c 0%,#6b4c9a 100%);border-radius:8px;margin-bottom:1rem;">
+    <div class="manager-stats-header" style="background:linear-gradient(135deg,#3949ab 0%,#5c6bc0 100%);border-radius:8px;margin-bottom:1rem;">
       <span>📊 합산 실적 현황</span>
       <span style="display:flex;align-items:center;gap:0.5rem;">
         <!-- 기간 선택 드롭다운 -->
@@ -727,7 +727,7 @@ tr.selected { background: var(--primary-light); }
           </table>
         </div>
         <!-- 기술컨설팅 전체 합계 -->
-        <table class="manager-table grand-total-table" style="width:100%;background:linear-gradient(135deg,#00897b 0%,#004d40 100%);">
+        <table class="manager-table grand-total-table" style="width:100%;background:linear-gradient(135deg,#26a69a 0%,#00796b 100%);">
           <tr>
             <td><strong>컨설팅 합계</strong></td>
             <td id="mgrConsGrandCnt"><strong>0건</strong></td>
@@ -756,7 +756,7 @@ tr.selected { background: var(--primary-light); }
           </table>
         </div>
         <!-- 합산 전체 합계 -->
-        <table class="manager-table grand-total-table" style="width:100%;background:linear-gradient(135deg,#4a148c 0%,#6b4c9a 100%);">
+        <table class="manager-table grand-total-table" style="width:100%;background:linear-gradient(135deg,#3949ab 0%,#5c6bc0 100%);">
           <tr>
             <td><strong>전체 합산</strong></td>
             <td id="mgrCombGrandCnt"><strong>0건</strong></td>
@@ -15120,7 +15120,47 @@ function renderNewCombinedStats(period) {
   sc('mgrCombGrandAmtTax', `<strong>${f(totAmtTax)}</strong>`);
 }
 
-function printNewManagerStats() { window.print(); }
+function printNewManagerStats() {
+  const content = document.getElementById('mainManagerSection');
+  if (!content) return;
+  const periodLabels = { all:'전체', q1:'1분기', q2:'2분기', q3:'3분기', q4:'4분기', h1:'상반기', h2:'하반기' };
+  const periodLabel = periodLabels[currentManagerPeriod] || '전체';
+  const title = `${currentYear}년 ${periodLabel} 실적현황`;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>${title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      @page { size: A4 landscape; margin: 10mm 12mm; }
+      * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; font-size: 11px; padding: 10px; }
+      .print-title { text-align: center; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+      .print-subtitle { text-align: center; font-size: 11px; color: #666; margin-bottom: 14px; }
+      .manager-stats-header { display: none; }
+      > div > div[style*="grid-template-columns:1fr 1fr 1fr"] { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+      [style*="grid-template-columns:1fr 1fr 1fr"] { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+      .manager-category { margin-bottom: 8px; }
+      .category-title { font-size: 12px; font-weight: 700; margin-bottom: 5px; padding: 4px 8px; background: #f0f0f0; border-radius: 4px; text-align: center; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 10px; }
+      th, td { border: 1px solid #999; padding: 4px 6px; }
+      th { background: #e8e8e8 !important; font-weight: 700; text-align: center; }
+      td { text-align: right; font-family: 'Courier New', monospace; }
+      td:first-child { text-align: left; font-family: inherit; }
+      td:nth-child(2) { text-align: center; }
+      .subtotal-row { background: #e3f2fd !important; }
+      .subtotal-row td { font-weight: 600; }
+      .type-row { background: #fafafa !important; }
+      .type-row td { font-size: 9.5px; color: #555; }
+      .grand-total-table td { background: #546e7a !important; color: white !important; font-weight: 700; font-size: 11px; padding: 6px; }
+    </style>
+  </head><body>
+    <div class="print-title">${title}</div>
+    <div class="print-subtitle">인쇄일: ${new Date().toLocaleDateString('ko-KR')}</div>
+    ${content.innerHTML}
+  </body></html>`);
+  printWindow.document.close();
+  setTimeout(() => printWindow.print(), 400);
+}
 
 // 담당자 필터 채우기 (메인 화면)
 function populateConsultingMainManagerFilter() {
