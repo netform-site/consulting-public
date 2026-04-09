@@ -15209,11 +15209,40 @@ function openManagerDetail(name) {
       ${content}
     </div>`;
 
-  let html = '';
+  // 합산 요약 계산
+  const conItems = [...hqItems, ...extItems];
+  const sumAmt = (arr) => arr.reduce((s, it) => s + it.amount, 0);
+  const sumTax = (arr) => arr.reduce((s, it) => s + it.amountTax, 0);
+  const conAmt = sumAmt(conItems), conTax = sumTax(conItems);
+  const csAmt  = sumAmt(consItems), csTax = sumTax(consItems);
+  const totCnt = conItems.length + consItems.length;
+  const totAmt = conAmt + csAmt, totTax = conTax + csTax;
+
+  // 상단 합산 요약 카드
+  const summaryCard = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.2rem;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:12px 14px;border-top:3px solid #1565c0;">
+        <div style="font-size:0.75rem;font-weight:600;color:#1565c0;margin-bottom:4px;">🏗️ 공사현황</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#1a237e;">${conItems.length}건</div>
+        <div style="font-size:0.78rem;color:#555;margin-top:2px;">VAT포함 ${f(conTax)}원</div>
+      </div>
+      <div style="background:#e0f2f1;border-radius:8px;padding:12px 14px;border-top:3px solid #00695c;">
+        <div style="font-size:0.75rem;font-weight:600;color:#00695c;margin-bottom:4px;">📋 기술컨설팅</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#004d40;">${consItems.length}건</div>
+        <div style="font-size:0.78rem;color:#555;margin-top:2px;">VAT포함 ${f(csTax)}원</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#3949ab,#5c6bc0);border-radius:8px;padding:12px 14px;color:white;">
+        <div style="font-size:0.75rem;font-weight:600;opacity:0.85;margin-bottom:4px;">📊 전체 합산</div>
+        <div style="font-size:1.1rem;font-weight:700;">${totCnt}건</div>
+        <div style="font-size:0.78rem;opacity:0.9;margin-top:2px;">VAT포함 ${f(totTax)}원</div>
+      </div>
+    </div>`;
+
+  let html = summaryCard;
   if (hqItems.length) html += section('[ 본사 ] 공사현황', '#1565c0', buildTable(hqItems, false));
   if (extItems.length) html += section('[ 외주 ] 공사현황', '#e65100', buildTable(extItems, false));
   if (consItems.length) html += section('[ 기술컨설팅 ]', '#00695c', buildTable(consItems, true));
-  if (!html) html = '<p style="text-align:center;color:#999;padding:2rem;">해당 기간 데이터가 없습니다.</p>';
+  if (totCnt === 0) html = '<p style="text-align:center;color:#999;padding:2rem;">해당 기간 데이터가 없습니다.</p>';
 
   document.getElementById('mgrDetailTitle').textContent = `${name}  ·  ${currentYear}년 ${periodLabel} 실적 상세`;
   document.getElementById('mgrDetailBody').innerHTML = html;
@@ -15237,7 +15266,8 @@ function printManagerDetail() {
       * { margin:0; padding:0; box-sizing:border-box; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       body { font-family:'Malgun Gothic',sans-serif; font-size:12px; padding:10px; }
       .pt { text-align:center; font-size:18px; font-weight:700; padding-bottom:8px; border-bottom:2px solid #333; margin-bottom:4px; }
-      .ps { text-align:right; font-size:11px; color:#666; margin-bottom:16px; }
+      .ps { text-align:right; font-size:11px; color:#666; margin-bottom:14px; }
+      div[style*="grid-template-columns:1fr 1fr 1fr"] { display:grid !important; grid-template-columns:1fr 1fr 1fr !important; gap:10px; margin-bottom:14px; }
       .sec { margin-bottom:16px; }
       .sec-label { font-size:13px; font-weight:700; padding:5px 10px; margin-bottom:6px; border-left:3px solid #546e7a; background:#f5f5f5; }
       table { width:100%; border-collapse:collapse; margin-bottom:4px; }
